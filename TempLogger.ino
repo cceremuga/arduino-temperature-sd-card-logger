@@ -1,21 +1,31 @@
 #include <SD.h>
 
-const int temperaturePin = 0;
-const int chipSelect = 10;
-const int serialBaudRate = 9600;
-const int tempTimer = 5000;
-const int pinModeNum = 10;
+//analog sensor pin number
+#define TEMPERTURE_PIN_NUM 0
+//Arduino Ethernet shield: pin 4
+//Adafruit SD shields and modules: pin 10
+//Sparkfun SD shield: pin 8
+#define SD_PIN_NUM 10
+//serial baud rate
+#define BAUD_RATE 9600
+//how many milliseconds between readings
+#define TEMPERTURE_READ_TIMER 5000
+//On the Ethernet Shield, CS is pin 4. It's set as an output by default.
+//Note that even if it's not used as the CS pin, the hardware SS pin 
+//(10 on most Arduino boards, 53 on the Mega) must be left as an output 
+//or the SD library functions will not work. 
+#define PIN_MODE 10
 
 void setup() {
   //initialize serial
-  Serial.begin(serialBaudRate);
+  Serial.begin(BAUD_RATE);
 
   //initialize SD
   Serial.println("Initializing SD card.");
 
-  pinMode(10, OUTPUT);
+  pinMode(PIN_MODE, OUTPUT);
 
-  if (!SD.begin(chipSelect)) {
+  if (!SD.begin(SD_PIN_NUM)) {
     Serial.println("SD Card initialization failed, or not present, cannot proceed.");
     return;
   }
@@ -28,7 +38,7 @@ void loop() {
   float voltage, degreesC, degreesF;
 
   //get voltage
-  voltage = getVoltage(temperaturePin);
+  voltage = getVoltage(TEMPERTURE_PIN_NUM);
   //find celcius
   degreesC = (voltage - 0.5) * 100.0;
   //fins fahrenheit
@@ -50,7 +60,7 @@ void loop() {
   }
 
   //delay by timer in milliseconds
-  delay(tempTimer);
+  delay(TEMPERTURE_READ_TIMER);
 }
 
 float getVoltage(int pin) {
