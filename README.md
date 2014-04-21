@@ -1,7 +1,7 @@
-Arduino SD Card Temperture Logger
+Arduino Temperature SD Card Logger
 =========
 
-This project logs an analog temperture sensor connected to an Arduino Uno compatible board to an attached SD card.
+This project logs an analog temperture sensor connected to an Arduino Uno compatible board to an attached SD / Micro SD card.
 
 Legal stuff
 -----------
