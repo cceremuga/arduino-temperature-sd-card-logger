@@ -24,9 +24,7 @@ void setup() {
   pinMode(SD_PIN, OUTPUT);
 
   if (!SD.begin(SD_PIN)) {
-    if(Serial) {
-      Serial.println("SD Card initialization failed, or not present, cannot proceed.");
-    }
+    sendMessageToSerial("SD Card initialization failed, or not present, cannot proceed.");
 
     return;
   }
@@ -36,42 +34,62 @@ void setup() {
     Serial.begin(BAUD_RATE);
 
     //good to go, begin loop.
-    Serial.println("Serial initialized!");
+    sendMessageToSerial("Serial initialized!");
   }
 }
 
 //da loop
 void loop() {
+  //turn light on
   activateLed();
 
-  logTempToSd();
+  //current voltage of analog pin
+  float currentVoltage = getVoltage(TEMPERATURE_PIN_NUM);
 
+  //convert from voltage to fahrenheit
+  float currentTempInFahrenheit = getCurrentTempInF(currentVoltage);
+
+  //log to SD card
+  logTempToSd(currentTempInFahrenheit);
+
+  //wait a bit to read again
   delay(TEMPERATURE_READ_TIMER);
 }
 
 //logs the current temperature reading to the SD card
-void logTempToSd() {
-  float voltage, degreesC, degreesF;
-
-  //get voltage
-  voltage = getVoltage(TEMPERATURE_PIN_NUM);
-  //find celcius
-  degreesC = (voltage - 0.5) * 100.0;
-  //fins fahrenheit
-  degreesF = degreesC * (9.0/5.0) + 32.0;
-
+void logTempToSd(float temperature) {
   //open file
   File dataFile = SD.open("datalog.txt", FILE_WRITE);
 
   //output to file if opened
   if (dataFile) {
-    dataFile.println(degreesF);
+    dataFile.println(temperature);
     dataFile.close();
 
-    if(Serial) {
-      //output to serial
-      Serial.println(degreesF);
-    }
+    sendMessageToSerial(temperature);
+  }
+}
+
+float getCurrentTempInF(float voltage) {
+  float degreesC, degreesF;
+
+  //find celcius
+  degreesC = (voltage - 0.5) * 100.0;
+  //fins fahrenheit
+  degreesF = degreesC * (9.0/5.0) + 32.0;
+
+  return degreesF;
+}
+
+void sendMessageToSerial(float f) {
+  if(Serial) {
+    Serial.println(f);
+  }
+}
+
+void sendMessageToSerial(String s) {
+  if(Serial) {
+    Serial.println(s);
   }
 }
 
