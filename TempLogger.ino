@@ -35,7 +35,7 @@ void setup() {
     //initialize serial
     Serial.begin(BAUD_RATE);
 
-    //good to go, being loop.
+    //good to go, begin loop.
     Serial.println("Serial initialized!");
   }
 }
